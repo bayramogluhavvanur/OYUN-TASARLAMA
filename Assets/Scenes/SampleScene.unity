@@ -767,7 +767,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 1000
   targetSwitch: {fileID: 758685295}
   obstacleWall: {fileID: 2003923990}
   moveSpeed: 5
@@ -787,11 +787,11 @@ MonoBehaviour:
     VectorObservationSize: 8
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 0
-      BranchSizes: 01000000i
-    VectorActionSize: 01000000i
+      m_NumContinuousActions: 2
+      BranchSizes: 
+    VectorActionSize: 02000000i
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
