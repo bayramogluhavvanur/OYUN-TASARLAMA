@@ -5,6 +5,15 @@ using Unity.MLAgents.Actuators;
 
 public class CompanionAgent : Agent
 {
+    private void Update()
+    {
+        // Ajan zeminden aşağı (örneğin Y ekseninde -1'in altına) düşerse bölümü bitir
+        if (transform.localPosition.y < -1f)
+        {
+            SetReward(-1.0f);
+            EndEpisode();
+        }
+    }
     [SerializeField] private Transform targetSwitch;  // Şalter / Buton
     [SerializeField] private Transform obstacleWall;  // YER DEĞİŞTİREN ENGEL (YENİ EKLENDİ)
     [SerializeField] private float moveSpeed = 5f;
@@ -19,9 +28,10 @@ public class CompanionAgent : Agent
     public override void OnEpisodeBegin()
     {
         // 1. Ajanın hızını sıfırla ve başlangıç alanına koy
-        rb.linearVelocity = Vector3.zero;
-        transform.localPosition = new Vector3(Random.Range(-2f, 2f), 0.5f, -7f);
-
+       rb.linearVelocity = Vector3.zero;
+       rb.angularVelocity = Vector3.zero; // Dönüş hızını da sıfırlamayı unutma
+// Yüksekliği 0.5f yerine 1.5f yapıyoruz ki ajan havadan zemine temizce, sıkışmadan düşsün
+       transform.localPosition = new Vector3(Random.Range(-2f, 2f), 1.5f, -7f);
         // 2. Şalterin (Hedef) yerini rastgele değiştir (Zemin üst kısmında)
         targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(5f, 8f));
 
@@ -37,7 +47,8 @@ public class CompanionAgent : Agent
     {
         sensor.AddObservation(transform.localPosition);
         sensor.AddObservation(targetSwitch.localPosition);
-        sensor.AddObservation(rb.linearVelocity);
+        sensor.AddObservation(rb.linearVelocity.x);
+        sensor.AddObservation(rb.linearVelocity.z);
     }
 
     // AJANIN HAREKETİ VE ZAMAN CEZASI
@@ -50,7 +61,7 @@ public class CompanionAgent : Agent
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
 
         // Zamana bağlı küçük ceza (Ajan boş durmasın, hızlı gitsin)
-        AddReward(-0.001f);
+        AddReward(0.001f);
     }
 
     // TETİKLENMELER VEYA ÇARPIŞMALAR
@@ -60,6 +71,11 @@ public class CompanionAgent : Agent
         {
             SetReward(1.0f); // Büyük ödül!
             EndEpisode();   // Turu bitir ve yeni tura geç
+        }
+        else if (other.transform == obstacleWall)
+        {
+        SetReward(-1.0f); // Ceza
+        EndEpisode();    // Bölümü bitir
         }
     }
 
