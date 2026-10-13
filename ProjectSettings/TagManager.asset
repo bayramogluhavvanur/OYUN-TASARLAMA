@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Wall
   - Switch
+  - Yoldas
+  - Buton
   layers:
   - Default
   - TransparentFX
