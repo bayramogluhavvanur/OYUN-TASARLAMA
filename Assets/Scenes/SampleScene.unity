@@ -747,7 +747,7 @@ Transform:
   m_GameObject: {fileID: 790027352}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -7}
+  m_LocalPosition: {x: 0.13, y: 1, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -785,7 +785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Policies.BehaviorParameters
   m_BrainParameters:
-    VectorObservationSize: 8
+    VectorObservationSize: 11
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
@@ -794,7 +794,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: f1dc95770b244a446828f6ed14fd6b28, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 756945d0c6f47984db5c983d4dcd465f, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: CompanionAgent
@@ -834,8 +834,8 @@ MonoBehaviour:
   m_DetectableTags:
   - Switch
   - Wall
-  m_RaysPerDirection: 3
-  m_MaxRayDegrees: 70
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 90
   m_SphereCastRadius: 0.5
   m_RayLength: 20
   m_RayLayerMask:
