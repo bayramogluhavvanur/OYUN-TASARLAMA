@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 1001987860}
   - component: {fileID: 1001987859}
   m_Layer: 0
-  m_Name: oyuncu
+  m_Name: bekci
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -374,10 +374,9 @@ GameObject:
   - component: {fileID: 1252263592}
   - component: {fileID: 1252263591}
   - component: {fileID: 1252263598}
-  - component: {fileID: 1252263597}
   - component: {fileID: 1252263596}
   - component: {fileID: 1252263600}
-  - component: {fileID: 1252263599}
+  - component: {fileID: 1252263601}
   m_Layer: 0
   m_Name: kahraman
   m_TagString: Yoldas
@@ -520,22 +519,6 @@ MonoBehaviour:
   DecisionPeriod: 5
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
---- !u!114 &1252263597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252263590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Agent
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
 --- !u!114 &1252263598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,24 +550,6 @@ MonoBehaviour:
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
---- !u!114 &1252263599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1252263590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a41a3ea23f8875479e415d5df98b8a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::YoldasZeka
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
-  hedefButon: {fileID: 0}
-  hareketHizi: 5
 --- !u!114 &1252263600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -603,6 +568,37 @@ MonoBehaviour:
   MaxStep: 0
   hedefButon: {fileID: 0}
   hareketHizi: 5
+  yesilKapi: {fileID: 2003561181}
+--- !u!114 &1252263601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252263590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Sensors.RayPerceptionSensorComponent3D
+  m_SensorName: RayPerceptionSensor
+  m_DetectableTags:
+  - Engel
+  - Buton
+  m_RaysPerDirection: 3
+  m_MaxRayDegrees: 70
+  m_SphereCastRadius: 0.5
+  m_RayLength: 20
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  m_ObservationStacks: 1
+  m_AlternatingRayOrder: 1
+  m_UseBatchedRaycasts: 0
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
+  m_StartVerticalOffset: 0
+  m_EndVerticalOffset: 0
 --- !u!1 &1457771845
 GameObject:
   m_ObjectHideFlags: 0
@@ -1160,7 +1156,7 @@ GameObject:
   - component: {fileID: 2003561182}
   m_Layer: 0
   m_Name: engelKapi
-  m_TagString: Untagged
+  m_TagString: Engel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1252,7 +1248,7 @@ Transform:
   m_GameObject: {fileID: 2003561181}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.64, y: 2, z: 1.49}
+  m_LocalPosition: {x: 1.64, y: 0.8, z: 0.6}
   m_LocalScale: {x: 5, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
