@@ -7,6 +7,7 @@ public class YoldasZeka : Agent // MonoBehaviour yerine Agent kullanıyoruz
 {
     [SerializeField] private Transform hedefButon; // Hedefimiz (Pembe Buton)
     [SerializeField] private float hareketHizi = 5f;
+    [SerializeField] private GameObject yesilKapi;
 
     private Vector3 baslangicPozisyonu;
 
@@ -20,6 +21,7 @@ public class YoldasZeka : Agent // MonoBehaviour yerine Agent kullanıyoruz
     public override void OnEpisodeBegin()
     {
         transform.localPosition = baslangicPozisyonu;
+        yesilKapi.SetActive(true);
     }
 
     // Yapay zekanın (veya senin) yoldaşı hareket ettirme kararları
@@ -46,6 +48,7 @@ public class YoldasZeka : Agent // MonoBehaviour yerine Agent kullanıyoruz
         // Eğer çarptığı şey "Buton" etiketine sahipse
         if (other.gameObject.CompareTag("Buton"))
         {
+            yesilKapi.SetActive(false); 
             SetReward(1f); // ÖDÜL VER!
             Debug.Log("Butona basıldı! Yeşil kapı açılacak.");
             EndEpisode();  // Başarılı olduğu için turu bitir
