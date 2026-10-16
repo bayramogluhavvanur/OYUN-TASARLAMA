@@ -3,60 +3,92 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
-public class YoldasZeka : Agent // MonoBehaviour yerine Agent kullanıyoruz
+public class YoldasZeka : Agent
 {
-    [SerializeField] private Transform hedefButon; // Hedefimiz (Pembe Buton)
+    [Header("Hedef ve Hareket Ayarları")]
+    [SerializeField] private Transform hedefButon; // Pembe Buton
     [SerializeField] private float hareketHizi = 5f;
 
     private Vector3 baslangicPozisyonu;
+    private bool otomatikyuru = false; // LLM'den komut gelince aktifleşecek bayrak
 
-    // Oyun başladığında yoldaşın ilk konumunu hafızaya al
     public override void Initialize()
     {
         baslangicPozisyonu = transform.localPosition;
     }
 
-    // Her eğitim turu (Episode) baştan başladığında yoldaşı yerine koy
     public override void OnEpisodeBegin()
     {
         transform.localPosition = baslangicPozisyonu;
+        otomatikyuru = false;
     }
 
-    // Yapay zekanın (veya senin) yoldaşı hareket ettirme kararları
+    // CompanionBridge'den tetiklenen metod
+    public void ButonaGitKomutuAl()
+    {
+        Debug.Log("[YoldasZeka] LLM komutu alındı! Pembe butona doğru yürüyüş başlatılıyor.");
+        otomatikyuru = true;
+    }
+
+    private void Update()
+    {
+        // LLM komutu geldiyse pembe butona doğru otonom yürü
+        if (otomatikyuru && hedefButon != null)
+        {
+            Vector3 hedefYon = (hedefButon.localPosition - transform.localPosition).normalized;
+            hedefYon.y = 0; // Dikey eksende kaymayı önle
+            transform.localPosition += hedefYon * hareketHizi * Time.deltaTime;
+        }
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(transform.localPosition);
+        if (hedefButon != null)
+        {
+            sensor.AddObservation(hedefButon.localPosition);
+            sensor.AddObservation(hedefButon.localPosition - transform.localPosition);
+            sensor.AddObservation(Vector3.Distance(transform.localPosition, hedefButon.localPosition));
+        }
+        else
+        {
+            sensor.AddObservation(Vector3.zero);
+            sensor.AddObservation(Vector3.zero);
+            sensor.AddObservation(0f);
+        }
+        sensor.AddObservation(transform.localPosition.y);
+    }
+
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // Yapay zekadan gelen X ve Z yönündeki hareket verileri
+        // Klavye (Heuristic) hareketleri
         float hareketX = actions.ContinuousActions[0];
         float hareketZ = actions.ContinuousActions[1];
 
         Vector3 hareket = new Vector3(hareketX, 0, hareketZ);
         transform.localPosition += hareket * hareketHizi * Time.deltaTime;
 
-        // CEZA DURUMU: Eğer yoldaş dar beyaz yoldan düşerse
         if (transform.localPosition.y < 0)
         {
-            SetReward(-1f); // Ceza ver
-            EndEpisode();   // Turu başa sar
+            SetReward(-1f);
+            EndEpisode();
         }
     }
 
-    // Fiziksel çarpışma (Hedefi bulma)
     private void OnTriggerEnter(Collider other)
     {
-        // Eğer çarptığı şey "Buton" etiketine sahipse
         if (other.gameObject.CompareTag("Buton"))
         {
-            SetReward(1f); // ÖDÜL VER!
-            Debug.Log("Butona basıldı! Yeşil kapı açılacak.");
-            EndEpisode();  // Başarılı olduğu için turu bitir
+            SetReward(1f);
+            Debug.Log("[YoldasZeka] BAŞARILI! Pembe butona fiziksel olarak temas edildi.");
+            otomatikyuru = false; // Butona ulaştığı için yürümeyi durdur
         }
     }
 
-    // Eğitim öncesi senin klavyeyle test edebilmen için manuel kontrol
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = Input.GetAxisRaw("Horizontal"); // A ve D tuşları
-        continuousActions[1] = Input.GetAxisRaw("Vertical");   // W ve S tuşları
+        continuousActions[0] = Input.GetAxisRaw("Horizontal");
+        continuousActions[1] = Input.GetAxisRaw("Vertical");
     }
 }
