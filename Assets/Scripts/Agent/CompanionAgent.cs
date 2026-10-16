@@ -33,22 +33,34 @@ public class CompanionAgent : Agent
 // Yüksekliği 0.5f yerine 1.5f yapıyoruz ki ajan havadan zemine temizce, sıkışmadan düşsün
        transform.localPosition = new Vector3(Random.Range(-2f, 2f), 1.5f, -7f);
         // 2. Şalterin (Hedef) yerini rastgele değiştir (Zemin üst kısmında)
-        targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(5f, 8f));
+if (obstacleWall != null)
+    {
+        obstacleWall.localPosition = new Vector3(Random.Range(-2f, 2f), 0.5f, 0f);
+    }
 
-        // 3. Ortadaki Engelin (ObstacleWall) yerini rastgele değiştir
-        if (obstacleWall != null)
-        {
-            obstacleWall.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(-1f, 2f));
-        }
+    // Şalter engelin ARKASINDA dursun
+    targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(4f, 7f));
     }
 
     // AJANIN VERİ TOPLAMASI (Gözlem)
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(targetSwitch.localPosition);
-        sensor.AddObservation(rb.linearVelocity.x);
-        sensor.AddObservation(rb.linearVelocity.z);
+        // Ajanın ve hedeflerin pozisyonları
+    sensor.AddObservation(transform.localPosition);
+    sensor.AddObservation(targetSwitch.localPosition);
+    
+    // Engelin ajana göre MESAFESİ / YÖNÜ (Vector3 = 3 observation)
+    if (obstacleWall != null)
+    {
+        sensor.AddObservation(obstacleWall.localPosition - transform.localPosition);
+    }
+    else
+    {
+        sensor.AddObservation(Vector3.zero);
+    }
+
+    sensor.AddObservation(rb.linearVelocity.x);
+    sensor.AddObservation(rb.linearVelocity.z);
     }
 
     // AJANIN HAREKETİ VE ZAMAN CEZASI
@@ -61,7 +73,7 @@ public class CompanionAgent : Agent
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
 
         // Zamana bağlı küçük ceza (Ajan boş durmasın, hızlı gitsin)
-        AddReward(0.001f);
+        AddReward(-0.001f);
     }
 
     // TETİKLENMELER VEYA ÇARPIŞMALAR
