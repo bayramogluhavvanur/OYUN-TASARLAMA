@@ -8,6 +8,7 @@ public class YoldasZeka : Agent
     [Header("Hedef ve Hareket Ayarları")]
     [SerializeField] private Transform hedefButon; // Pembe Buton
     [SerializeField] private float hareketHizi = 5f;
+    [SerializeField] private GameObject yesilKapi;
 
     private Vector3 baslangicPozisyonu;
     private bool otomatikyuru = false; // LLM'den komut gelince aktifleşecek bayrak
@@ -20,7 +21,6 @@ public class YoldasZeka : Agent
     public override void OnEpisodeBegin()
     {
         transform.localPosition = baslangicPozisyonu;
-        otomatikyuru = false;
     }
 
     // CompanionBridge'den tetiklenen metod
@@ -79,9 +79,9 @@ public class YoldasZeka : Agent
     {
         if (other.gameObject.CompareTag("Buton"))
         {
-            SetReward(1f);
-            Debug.Log("[YoldasZeka] BAŞARILI! Pembe butona fiziksel olarak temas edildi.");
-            otomatikyuru = false; // Butona ulaştığı için yürümeyi durdur
+            SetReward(1f); // ÖDÜL VER!
+            Debug.Log("Butona basıldı! Yeşil kapı açılacak.");
+            EndEpisode();  // Başarılı olduğu için turu bitir
         }
     }
 
