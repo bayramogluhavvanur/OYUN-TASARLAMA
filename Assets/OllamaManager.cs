@@ -32,7 +32,7 @@ public class OllamaManager : MonoBehaviour
     void Start()
     {
         // Oyuncu hareket scriptini bul (ismini kendi scriptine göre uyarlayabilirsin)
-        oyuncuHareket = FindAnyObjectByType<KahramanHareket>();
+        oyuncuHareket = FindAnyObjectByType<YoldasZeka>();
 
         gonderButonu.onClick.AddListener(MesajGonder);
         kullaniciGirdisi.onSubmit.AddListener(delegate { MesajGonder(); });

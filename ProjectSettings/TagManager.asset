@@ -9,6 +9,11 @@ TagManager:
   - Yoldas
   - Buton
   - Engel
+  - Ground
+  - Obstacle
+  - Door
+  - Portal
+  - Agent
   layers:
   - Default
   - TransparentFX
