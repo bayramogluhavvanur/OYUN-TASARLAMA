@@ -1208,6 +1208,7 @@ MonoBehaviour:
   MaxStep: 0
   hedefButon: {fileID: 605966615}
   hareketHizi: 5
+  yesilKapi: {fileID: 0}
 --- !u!114 &790027363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1746,8 +1747,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
+  m_sharedMaterial: {fileID: -4791522941538857457, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2139,7 +2140,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a4187f44ee96804689e8ceefafe2f79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalLLMManager
-  useMockResponse: 1
+  useMockResponse: 0
+  ollamaUrl: http://localhost:11434/api/generate
+  modelName: llama3
   bridge: {fileID: 1811695739}
   chatUI: {fileID: 1811695737}
 --- !u!114 &1811695739
