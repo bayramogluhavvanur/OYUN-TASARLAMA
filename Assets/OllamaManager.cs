@@ -1,0 +1,148 @@
+using System.Collections;
+using System.Text;
+using UnityEngine;
+using UnityEngine.Networking;
+using TMPro;
+using UnityEngine.UI;
+
+public class OllamaManager : MonoBehaviour
+{
+    [Header("Arayüz Bağlantıları")]
+    public GameObject diyalogPaneli;
+    public TMP_InputField kullaniciGirdisi;
+    public Button gonderButonu;
+    public TextMeshProUGUI bekciMetni;
+
+    [Header("Oyun İçi Etkileşim")]
+    public GameObject engelKapi;
+
+    [Header("Model Ayarları")]
+    private string ollamaUrl = "http://127.0.0.1:11434/api/generate";
+    private string modelName = "qwen2.5:7b";
+
+    private string sistemTalimati =
+        "Sen fantastik bir RPG oyununda Kadim Bekçi adlı bir NPCsın. Karşındaki gezgin seni ikna edip geçmek istiyor. " +
+        "Eğer mantıklı, destansı veya saygılı bir sebep sunarsa kapıyı açmayı kabul et. Saygısızsa reddet. " +
+        "SADECE aşağıdaki JSON formatında cevap ver, başka hiçbir açıklama veya markdown (```json vb.) kullanma: " +
+        "{\"cevap\": \"Buraya gezgine söyleyeceğin 2 kısa cümlelik sözler gelecek.\", \"kapiAcilsinMi\": true_veya_false}";
+
+    private KahramanHareket oyuncuHareket;
+
+    void Start()
+    {
+        oyuncuHareket = FindAnyObjectByType<KahramanHareket>();
+
+        gonderButonu.onClick.AddListener(MesajGonder);
+        kullaniciGirdisi.onSubmit.AddListener(delegate { MesajGonder(); });
+    }
+
+    public void PaneliAc()
+    {
+        diyalogPaneli.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        kullaniciGirdisi.ActivateInputField();
+
+        if (oyuncuHareket != null) oyuncuHareket.enabled = false;
+    }
+
+    public void PaneliKapat()
+    {
+        diyalogPaneli.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        if (oyuncuHareket != null) oyuncuHareket.enabled = true;
+    }
+
+    void MesajGonder()
+    {
+        if (string.IsNullOrWhiteSpace(kullaniciGirdisi.text)) return;
+
+        string mesaj = kullaniciGirdisi.text;
+        kullaniciGirdisi.text = "";
+        bekciMetni.text = "Bekçi zihnini topluyor...";
+
+        StartCoroutine(OllamaIstekGonder(mesaj));
+    }
+
+    IEnumerator OllamaIstekGonder(string prompt)
+    {
+        // JSON paketini güvenli bir sınıf üzerinden oluşturuyoruz
+        OllamaIstekPaketi istekPaketi = new OllamaIstekPaketi
+        {
+            model = modelName,
+            prompt = prompt,
+            system = sistemTalimati,
+            stream = false,
+            format = "json"
+        };
+
+        string jsonVerisi = JsonUtility.ToJson(istekPaketi);
+
+        using (UnityWebRequest istek = new UnityWebRequest(ollamaUrl, "POST"))
+        {
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonVerisi);
+            istek.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            istek.downloadHandler = new DownloadHandlerBuffer();
+            istek.SetRequestHeader("Content-Type", "application/json");
+            istek.timeout = 60; // Ağır modeller için bekleme süresi
+
+            yield return istek.SendWebRequest();
+
+            if (istek.result == UnityWebRequest.Result.Success)
+            {
+                try
+                {
+                    OllamaYanit yanit = JsonUtility.FromJson<OllamaYanit>(istek.downloadHandler.text);
+                    BekciCevabi bekciVerisi = JsonUtility.FromJson<BekciCevabi>(yanit.response);
+
+                    bekciMetni.text = bekciVerisi.cevap.Trim();
+
+                    if (bekciVerisi.kapiAcilsinMi)
+                    {
+                        if (engelKapi != null)
+                        {
+                            engelKapi.SetActive(false);
+                            Debug.Log("Başarılı: Bekçi ikna oldu, kapı açıldı!");
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    bekciMetni.text = "Bekçi'nin zihni bulandı... (JSON formatı bozuk)";
+                    Debug.LogError("JSON Çözümleme Hatası: " + e.Message);
+                }
+            }
+            else
+            {
+                bekciMetni.text = "Zihinsel bağ koptu (Zaman aşımı veya bağlantı hatası).";
+                Debug.LogError("Ollama Hatası: " + istek.error);
+            }
+        }
+    }
+}
+
+// İstek göndermek için yapılandırılmış güvenli JSON sınıfı
+[System.Serializable]
+public class OllamaIstekPaketi
+{
+    public string model;
+    public string prompt;
+    public string system;
+    public bool stream;
+    public string format;
+}
+
+[System.Serializable]
+public class OllamaYanit
+{
+    public string response;
+}
+
+[System.Serializable]
+public class BekciCevabi
+{
+    public string cevap;
+    public bool kapiAcilsinMi;
+}
