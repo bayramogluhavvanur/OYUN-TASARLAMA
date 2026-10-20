@@ -10,13 +10,13 @@ public class ChatUIManager : MonoBehaviour
     [Header("Referanslar")]
     [SerializeField] private LocalLLMManager llmManager;
 
-    // Gönder butonuna basıldığında çağrılır
     public void OnSendButtonClicked()
     {
         if (inputField != null && !string.IsNullOrWhiteSpace(inputField.text))
         {
             string userMessage = inputField.text;
-            inputField.text = ""; // Mesaj gönderilince kutuyu temizle
+            inputField.text = ""; // Mesaj kutusunu temizle
+            inputField.ActivateInputField(); // Yazı yazma odağını kutuda tut
 
             if (llmManager != null)
             {
@@ -25,7 +25,6 @@ public class ChatUIManager : MonoBehaviour
         }
     }
 
-    // LocalLLMManager'dan gelen cevabı ekrana yazdıran metod
     public void DisplayResponse(string message)
     {
         if (chatLogText != null)
