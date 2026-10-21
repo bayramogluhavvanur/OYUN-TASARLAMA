@@ -32,6 +32,12 @@ public class LocalLLMManager : MonoBehaviour
         public bool done;
     }
 
+    [System.Serializable]
+    public class LLMDecisionJSON
+    {
+        public string responseText;
+        public string command;
+    }
     public void AskLLM(string userPrompt)
     {
         if (useMockResponse)
@@ -46,22 +52,17 @@ public class LocalLLMManager : MonoBehaviour
 
     private IEnumerator SendOllamaRequest(string userPrompt)
     {
-        // 1. Chat UI üzerinde "Düşünüyor..." bilgisi göster
-        if (chatUI != null)
-        {
-            chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: Düşünüyor...");
-        }
+        if (chatUI != null) chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: Düşünüyor...");
 
-        // 2. Ollama'ya yönlendirici Sistem Prompt'u hazırla
+        // 1. JSON Şemalı Sistem Promptu (4.2 İsteri)
         string systemPrompt = 
-            "Sen bir oyundaki 'Yoldaş' adında yardımcı yapay zeka karakterisin.\n" +
-            $"Kullanıcının mesajı: \"{userPrompt}\"\n\n" +
-            "GÖREVİN:\n" +
-            "1. Kullanıcıya Türkçe kısa ve doğal bir yanıt ver.\n" +
-            "2. Eğer kullanıcı ışığı açmayı, şalteri indirmeyi veya butona basmayı istiyorsa yanıtının EN SONUNA [TOGGLE_LIGHTS] ekle.\n" +
-            "3. Eğer engeli kaldırmayı istiyorsa yanıtının EN SONUNA [REMOVE_OBSTACLE] ekle.\n" +
-            "4. Herhangi bir eylem gerekmiyorsa yanıtının EN SONUNA [NONE] ekle.\n\n" +
-            "Örnek Yanıt: Hemen gidip pembe butona basıyorum! [TOGGLE_LIGHTS]";
+            $"Kullanıcı Mesajı: \"{userPrompt}\"\n" +
+            "Sen bir oyundaki yardımsever yapay zeka ajansın. Sadece ve sadece aşağıdaki JSON formatında yanıt ver, başka hiçbir açıklama veya metin yazma:\n" +
+            "{\n" +
+            "  \"responseText\": \"Kullanıcıya vereceğin kısa Türkçe cevap\",\n" +
+            "  \"command\": \"TOGGLE_LIGHTS veya REMOVE_OBSTACLE veya NONE\"\n" +
+            "}\n" +
+            "Eğer kullanıcı ışık, şalter veya buton derse command alanına TOGGLE_LIGHTS yaz.";
 
         OllamaRequest reqBody = new OllamaRequest
         {
@@ -78,47 +79,48 @@ public class LocalLLMManager : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
+            
+            // Zaman aşımı koruması: 10 saniye yanıt gelmezse isteği iptal et (4.3 İsteri)
+            request.timeout = 10; 
 
             yield return request.SendWebRequest();
 
+            string cleanText = "Seni anlayamadım ama bekliyorum.";
+            string command = "NONE";
+
             if (request.result == UnityWebRequest.Result.Success)
             {
-                OllamaResponse respData = JsonUtility.FromJson<OllamaResponse>(request.downloadHandler.text);
-                string rawText = respData.response;
-
-                // Komutu ve Ekrana Basılacak Temiz Metni Ayıkla
-                string command = ParseCommand(rawText);
-                string cleanText = CleanResponseText(rawText);
-
-                // 3. Ekrana Yanıtı Yazdır
-                if (chatUI != null)
+                try
                 {
-                    chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: {cleanText}");
+                    OllamaResponse respData = JsonUtility.FromJson<OllamaResponse>(request.downloadHandler.text);
+                    
+                    // JSON ayrıştırma işlemi (4.2 İsteri)
+                    LLMDecisionJSON parsedDecision = JsonUtility.FromJson<LLMDecisionJSON>(respData.response);
+                    if (parsedDecision != null && !string.IsNullOrEmpty(parsedDecision.command))
+                    {
+                        cleanText = parsedDecision.responseText;
+                        command = parsedDecision.command;
+                    }
                 }
-
-                // 4. Komutu Ajana Gönder
-                if (bridge != null)
+                catch (System.Exception ex)
                 {
-                    bridge.ProcessLLMCommand(command);
+                    // Bozuk/Geçersiz JSON üretilirse oyunun çökmemesi için koruma (4.2 & 4.3 İsteri)
+                    Debug.LogWarning("[LocalLLMManager] Bozuk JSON formatı alındı, varsayılan duruma geçiliyor: " + ex.Message);
+                    cleanText = "Biraz kafam karıştı ama buradayım.";
+                    command = "NONE";
                 }
             }
             else
             {
+                // Ollama sunucusuna ulaşılamazsa anlamlı geri bildirim (4.3 İsteri)
                 Debug.LogError("[LocalLLMManager] Ollama Bağlantı Hatası: " + request.error);
-                if (chatUI != null)
-                {
-                    chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: (Bağlantı hatası! Ollama arka planda açık mı?)");
-                }
+                cleanText = "(Yerel LLM sunucusuna ulaşılamadı. Lütfen Ollama'nın açık olduğunu kontrol edin.)";
             }
-        }
-    }
 
-    // Metin içindeki [TOGGLE_LIGHTS] gibi komut etiketlerini bulur
-    private string ParseCommand(string text)
-    {
-        if (text.Contains("[TOGGLE_LIGHTS]")) return "TOGGLE_LIGHTS";
-        if (text.Contains("[REMOVE_OBSTACLE]")) return "REMOVE_OBSTACLE";
-        return "NONE";
+            // UI ve Ajan tetikleme
+            if (chatUI != null) chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: {cleanText}");
+            if (bridge != null) bridge.ProcessLLMCommand(command);
+        }
     }
 
     // Ekran arayüzünde köşeli parantezli komut yazısının görünmemesi için temizler
