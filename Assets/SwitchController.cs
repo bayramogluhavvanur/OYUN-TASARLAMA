@@ -12,7 +12,7 @@ public class SwitchController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Yalnızca "Player" etiketli obje dokunduğunda tetiklenir
-        if (!tetiklendi && other.CompareTag("Player"))
+        if (!tetiklendi && (other.CompareTag("Player") || other.CompareTag("Agent")))
         {
             tetiklendi = true;
             Debug.Log("Switch ile etkileşime geçildi! Kapı küçülüyor..."); // İstenen Console logu
