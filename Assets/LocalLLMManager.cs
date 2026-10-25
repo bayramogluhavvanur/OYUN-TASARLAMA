@@ -8,7 +8,7 @@ public class LocalLLMManager : MonoBehaviour
     [Header("Ollama Ayarları")]
     [SerializeField] private bool useMockResponse = false; // Ollama çalışırken false yapın!
     [SerializeField] private string ollamaUrl = "http://localhost:11434/api/generate";
-    [SerializeField] private string modelName = "llama3";
+    [SerializeField] private string modelName = "llama3.2:1b";
 
     [Header("Referanslar")]
     [SerializeField] private CompanionBridge bridge;
@@ -54,15 +54,19 @@ public class LocalLLMManager : MonoBehaviour
     {
         if (chatUI != null) chatUI.DisplayResponse($"Siz: {userPrompt}\nYoldaş: Düşünüyor...");
 
-        // 1. JSON Şemalı Sistem Promptu (4.2 İsteri)
-        string systemPrompt = 
-            $"Kullanıcı Mesajı: \"{userPrompt}\"\n" +
-            "Sen bir oyundaki yardımsever yapay zeka ajansın. Sadece ve sadece aşağıdaki JSON formatında yanıt ver, başka hiçbir açıklama veya metin yazma:\n" +
+        string systemPrompt =
+            "Sen bir oyun içi sadık yoldaş asistanısın. Oyuncuya her zaman kusursuz, akıcı ve anlaşılır Türkçe ile kısa cevaplar ver.\n" +
+            "ASLA anlamsız, bozuk veya uyduruk kelimeler üretme (Örneğin 'içtişimi açtım' gibi hatalı kelimeler yazmak yasaktır).\n" +
+            "Sadece ve sadece şu JSON formatında yanıt ver:\n\n" +
             "{\n" +
-            "  \"responseText\": \"Kullanıcıya vereceğin kısa Türkçe cevap\",\n" +
-            "  \"command\": \"TOGGLE_LIGHTS veya REMOVE_OBSTACLE veya NONE\"\n" +
-            "}\n" +
-            "Eğer kullanıcı ışık, şalter veya buton derse command alanına TOGGLE_LIGHTS yaz.";
+            "  \"responseText\": \"Tamam patron, hemen şaltere gidip ışıkları açıyorum.\",\n" +
+            "  \"command\": \"TOGGLE_LIGHTS\"\n" +
+            "}\n\n" +
+            "Kurallar:\n" +
+            "- Eğer oyuncu ışık, şalter, aç veya buton derse 'command' kısmına kesinlikle 'TOGGLE_LIGHTS' yaz.\n" +
+            "- Eğer sıradan bir sohbetse 'command' kısmına 'NONE' yaz.\n" +
+            "- 'responseText' kısmı her zaman mantıklı, düzgün bir Türkçe cümle olmalıdır.\n\n" +
+            $"Kullanıcı Mesajı: \"{userPrompt}\"";
 
         OllamaRequest reqBody = new OllamaRequest
         {
@@ -79,9 +83,9 @@ public class LocalLLMManager : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            
+
             // Zaman aşımı koruması: 10 saniye yanıt gelmezse isteği iptal et (4.3 İsteri)
-            request.timeout = 10; 
+            request.timeout = 10;
 
             yield return request.SendWebRequest();
 
@@ -93,7 +97,7 @@ public class LocalLLMManager : MonoBehaviour
                 try
                 {
                     OllamaResponse respData = JsonUtility.FromJson<OllamaResponse>(request.downloadHandler.text);
-                    
+
                     // JSON ayrıştırma işlemi (4.2 İsteri)
                     LLMDecisionJSON parsedDecision = JsonUtility.FromJson<LLMDecisionJSON>(respData.response);
                     if (parsedDecision != null && !string.IsNullOrEmpty(parsedDecision.command))
