@@ -7,23 +7,23 @@ public class CompanionBridge : MonoBehaviour
 
     public void ProcessLLMCommand(string command)
     {
-        Debug.Log($"[CompanionBridge] LLM'den Gelen Komut İşleniyor: {command}");
+        Debug.Log($"[CompanionBridge] LLM'den Gelen Komut İşleniyor: '{command}'");
 
-        switch (command)
+        // 1. LLM'den gelen metni temizle (Görünmez boşlukları sil ve hepsini BÜYÜK HARF yap)
+        string temizKomut = command.Trim().ToUpper();
+
+        // 2. Metnin İÇİNDE bu komutlar geçiyor mu diye kontrol et (Daha esnek yapı)
+        if (temizKomut.Contains("TOGGLE_LIGHTS") || temizKomut.Contains("TOGGLE_SWITCH"))
         {
-            case "TOGGLE_LIGHTS":
-            case "TOGGLE_SWITCH":
-                ExecuteToggleLights();
-                break;
-
-            case "REMOVE_OBSTACLE":
-                ExecuteRemoveObstacle();
-                break;
-
-            case "NONE":
-            default:
-                Debug.Log("[CompanionBridge] Herhangi bir fiziksel eylem gerekmiyor.");
-                break;
+            ExecuteToggleLights();
+        }
+        else if (temizKomut.Contains("REMOVE_OBSTACLE"))
+        {
+            ExecuteRemoveObstacle();
+        }
+        else
+        {
+            Debug.Log("[CompanionBridge] Herhangi bir fiziksel eylem gerekmiyor.");
         }
     }
 
