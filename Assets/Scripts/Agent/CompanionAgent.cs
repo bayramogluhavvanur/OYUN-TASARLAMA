@@ -8,7 +8,7 @@ public class CompanionAgent : Agent
     private void Update()
     {
         // Ajan zeminden aşağı (örneğin Y ekseninde -1'in altına) düşerse bölümü bitir
-        if (transform.localPosition.y < -1f)
+        if (transform.localPosition.y < -20f)
         {
             SetReward(-1.0f);
             EndEpisode();
@@ -31,15 +31,15 @@ public class CompanionAgent : Agent
        rb.linearVelocity = Vector3.zero;
        rb.angularVelocity = Vector3.zero; // Dönüş hızını da sıfırlamayı unutma
 // Yüksekliği 0.5f yerine 1.5f yapıyoruz ki ajan havadan zemine temizce, sıkışmadan düşsün
-       transform.localPosition = new Vector3(Random.Range(-2f, 2f), 1.5f, -7f);
+       //transform.localPosition = new Vector3(Random.Range(-2f, 2f), 1.5f, -7f);
         // 2. Şalterin (Hedef) yerini rastgele değiştir (Zemin üst kısmında)
-        targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(5f, 8f));
+        //targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(5f, 8f));
 
         // 3. Ortadaki Engelin (ObstacleWall) yerini rastgele değiştir
-        if (obstacleWall != null)
-        {
-            obstacleWall.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(-1f, 2f));
-        }
+        //if (obstacleWall != null)
+        //{
+          //  obstacleWall.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(-1f, 2f));
+        //}
     }
 
     // AJANIN VERİ TOPLAMASI (Gözlem)
