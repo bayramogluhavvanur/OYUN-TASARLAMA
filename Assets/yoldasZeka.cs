@@ -74,7 +74,7 @@ public class YoldasZeka : Agent
             // HEDEFE GÖRE DURMA MESAFESİ:
             // Eğer hedef pembe butonsa 0.3 birim yaklaşsın (üzerine bassın).
             // Eğer hedef ana karakterse 1.5 birim uzakta dursun (içimize girmesin).
-            float durmaMesafesi = (aktifHedef == pembeButon) ? 0.3f : 1.5f;
+            float durmaMesafesi = (aktifHedef == pembeButon) ? 0.3f : 3f;
 
             // Mesafe, belirlediğimiz durma mesafesinden büyükse hareket et
             if (aradakiMesafe > durmaMesafesi)
