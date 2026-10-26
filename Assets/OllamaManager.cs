@@ -12,6 +12,8 @@ public class OllamaManager : MonoBehaviour
     public TMP_InputField kullaniciGirdisi;
     public Button gonderButonu;
     public TextMeshProUGUI bekciMetni;
+    // diyalogPaneli değişkeni karmaşayı önlemek için kaldırıldı.
+    public CanvasGroup panelCanvasGroup;
 
     [Header("Oyun İçi Etkileşim")]
     public GameObject engelKapi;
@@ -26,11 +28,12 @@ public class OllamaManager : MonoBehaviour
         "SADECE aşağıdaki JSON formatında cevap ver, başka hiçbir açıklama veya markdown (```json vb.) kullanma: " +
         "{\"cevap\": \"Buraya gezgine söyleyeceğin 2 kısa cümlelik sözler gelecek.\", \"kapiAcilsinMi\": true_veya_false}";
 
-    private KahramanHareket oyuncuHareket;
+    private MonoBehaviour oyuncuHareket; // KahramanHareket scriptini genel bir MonoBehaviour olarak tuttuk ki hata vermesin
 
     void Start()
     {
-        oyuncuHareket = FindAnyObjectByType<KahramanHareket>();
+        // Oyuncu hareket scriptini bul (ismini kendi scriptine göre uyarlayabilirsin)
+        oyuncuHareket = FindAnyObjectByType<YoldasZeka>();
 
         gonderButonu.onClick.AddListener(MesajGonder);
         kullaniciGirdisi.onSubmit.AddListener(delegate { MesajGonder(); });
@@ -38,7 +41,11 @@ public class OllamaManager : MonoBehaviour
 
     public void PaneliAc()
     {
-        diyalogPaneli.SetActive(true);
+        if (panelCanvasGroup != null)
+        {
+            StartCoroutine(FadeInPanel(panelCanvasGroup, 0.5f));
+        }
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         kullaniciGirdisi.ActivateInputField();
@@ -49,6 +56,12 @@ public class OllamaManager : MonoBehaviour
     public void PaneliKapat()
     {
         diyalogPaneli.SetActive(false);
+        if (panelCanvasGroup != null)
+        {
+            panelCanvasGroup.gameObject.SetActive(false);
+            panelCanvasGroup.alpha = 0f;
+        }
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
@@ -87,6 +100,7 @@ public class OllamaManager : MonoBehaviour
             istek.downloadHandler = new DownloadHandlerBuffer();
             istek.SetRequestHeader("Content-Type", "application/json");
             istek.timeout = 60; // Ağır modeller için bekleme süresi
+            istek.timeout = 60;
 
             yield return istek.SendWebRequest();
 
@@ -120,6 +134,20 @@ public class OllamaManager : MonoBehaviour
                 Debug.LogError("Ollama Hatası: " + istek.error);
             }
         }
+    }
+
+    public IEnumerator FadeInPanel(CanvasGroup panelGroup, float sure)
+    {
+        panelGroup.alpha = 0f;
+        panelGroup.gameObject.SetActive(true);
+
+        while (panelGroup.alpha < 1f)
+        {
+            panelGroup.alpha += Time.deltaTime / sure;
+            yield return null;
+        }
+
+        panelGroup.alpha = 1f;
     }
 }
 

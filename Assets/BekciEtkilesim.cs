@@ -10,6 +10,10 @@ public class BekciEtkilesim : MonoBehaviour
         if (other.gameObject.name.ToLower().Contains("player") || other.gameObject.name.ToLower().Contains("oyuncu"))
         {
             ollamaManager.PaneliAc();
+            if (ollamaManager != null)
+            {
+                ollamaManager.PaneliAc();
+            }
         }
     }
 
@@ -18,6 +22,10 @@ public class BekciEtkilesim : MonoBehaviour
         if (other.gameObject.name.ToLower().Contains("player") || other.gameObject.name.ToLower().Contains("oyuncu"))
         {
             ollamaManager.PaneliKapat();
+            if (ollamaManager != null)
+            {
+                ollamaManager.PaneliKapat();
+            }
         }
     }
 }
