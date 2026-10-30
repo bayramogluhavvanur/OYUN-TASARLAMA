@@ -16,6 +16,9 @@ TagManager:
   - Agent
   - Gate
   - Glass
+  - Checkpoint_1
+  - Checkpoint_2
+  - Button
   layers:
   - Default
   - TransparentFX

@@ -3,8 +3,11 @@ using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 
+
 public class CompanionAgent : Agent
 {
+    private bool ilkKontrolGecildi = false;
+    private bool ikinciKontrolGecildi = false;
     private void Update()
     {
         // Ajan zeminden aşağı (örneğin Y ekseninde -1'in altına) düşerse bölümü bitir
@@ -18,6 +21,7 @@ public class CompanionAgent : Agent
     [SerializeField] private Transform obstacleWall;  // YER DEĞİŞTİREN ENGEL (YENİ EKLENDİ)
     [SerializeField] private float moveSpeed = 5f;
     private Rigidbody rb;
+    public Transform spawnPoint;
 
     public override void Initialize()
     {
@@ -27,76 +31,101 @@ public class CompanionAgent : Agent
     // HER BÖLÜM (EPISODE) BAŞINDA SIFIRLAMA
     public override void OnEpisodeBegin()
     {
-        // 1. Ajanın hızını sıfırla ve başlangıç alanına koy
-       rb.linearVelocity = Vector3.zero;
-       rb.angularVelocity = Vector3.zero; // Dönüş hızını da sıfırlamayı unutma
-// Yüksekliği 0.5f yerine 1.5f yapıyoruz ki ajan havadan zemine temizce, sıkışmadan düşsün
-       //transform.localPosition = new Vector3(Random.Range(-2f, 2f), 1.5f, -7f);
-        // 2. Şalterin (Hedef) yerini rastgele değiştir (Zemin üst kısmında)
-if (obstacleWall != null)
-    {
-        obstacleWall.localPosition = new Vector3(Random.Range(-2f, 2f), 0.5f, 0f);
+        Debug.Log("--- BÖLÜM BAŞLADI (Ajan Doğdu) ---"); // TEŞHİS 1
+
+        ilkKontrolGecildi = false;
+        ikinciKontrolGecildi = false;
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        if (obstacleWall != null)
+        {
+            obstacleWall.localPosition = new Vector3(Random.Range(-2f, 2f), 0.5f, 0f);
+        }
+
+        targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(4f, 7f));
+        transform.position = spawnPoint.position;
     }
 
-    // Şalter engelin ARKASINDA dursun
-    targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(4f, 7f));
+    public override void OnActionReceived(ActionBuffers actions)
+    {
+        float moveX = actions.ContinuousActions[0];
+        float moveZ = actions.ContinuousActions[1];
+
+        Debug.Log("Ajan Kararı -> X: " + moveX + " | Z: " + moveZ); // TEŞHİS 2
+
+        Vector3 move = new Vector3(moveX, 0, moveZ) * moveSpeed;
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+
+        AddReward(-0.001f);
     }
 
     // AJANIN VERİ TOPLAMASI (Gözlem)
     public override void CollectObservations(VectorSensor sensor)
     {
         // Ajanın ve hedeflerin pozisyonları
-    sensor.AddObservation(transform.localPosition);
-    sensor.AddObservation(targetSwitch.localPosition);
-    
-    // Engelin ajana göre MESAFESİ / YÖNÜ (Vector3 = 3 observation)
-    if (obstacleWall != null)
-    {
-        sensor.AddObservation(obstacleWall.localPosition - transform.localPosition);
-    }
-    else
-    {
-        sensor.AddObservation(Vector3.zero);
+        sensor.AddObservation(transform.localPosition);
+        sensor.AddObservation(targetSwitch.localPosition);
+
+        // Engelin ajana göre MESAFESİ / YÖNÜ (Vector3 = 3 observation)
+        if (obstacleWall != null)
+        {
+            sensor.AddObservation(obstacleWall.localPosition - transform.localPosition);
+        }
+        else
+        {
+            sensor.AddObservation(Vector3.zero);
+        }
+
+        sensor.AddObservation(rb.linearVelocity.x);
+        sensor.AddObservation(rb.linearVelocity.z);
     }
 
-    sensor.AddObservation(rb.linearVelocity.x);
-    sensor.AddObservation(rb.linearVelocity.z);
-    }
-
-    // AJANIN HAREKETİ VE ZAMAN CEZASI
-    public override void OnActionReceived(ActionBuffers actions)
-    {
-        float moveX = actions.ContinuousActions[0];
-        float moveZ = actions.ContinuousActions[1];
-
-        Vector3 move = new Vector3(moveX, 0, moveZ) * moveSpeed;
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
-
-        // Zamana bağlı küçük ceza (Ajan boş durmasın, hızlı gitsin)
-        AddReward(-0.001f);
-    }
 
     // TETİKLENMELER VEYA ÇARPIŞMALAR
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Switch")) // Şaltere ulaştıysa
+        if (other.CompareTag("Checkpoint_1") && !ilkKontrolGecildi)
         {
-            SetReward(1.0f); // Büyük ödül!
-            EndEpisode();   // Turu bitir ve yeni tura geç
+            ilkKontrolGecildi = true;
+            AddReward(1.0f); // Doğru yön için ara ödül (Bölüm bitmez)
+            Debug.Log("İlk engelin sağından geçildi!");
         }
-        else if (other.transform == obstacleWall)
+        else if (other.CompareTag("Checkpoint_2") && ilkKontrolGecildi && !ikinciKontrolGecildi)
         {
-        SetReward(-1.0f); // Ceza
-        EndEpisode();    // Bölümü bitir
+            ikinciKontrolGecildi = true;
+            AddReward(1.0f); // İkinci doğru yön için ara ödül
+            Debug.Log("İkinci engelin solundan geçildi!");
+        }
+        else if (other.CompareTag("Button"))
+        {
+            SetReward(5.0f); // Hedefe ulaştı, büyük ödül!
+            Debug.Log("Butona basıldı, bölüm başarıyla bitti!");
+            // Buraya kapıyı açma kodunuzu ekleyebilirsiniz.
+            EndEpisode(); // Bölümü bitir ve başa sar
+        }
+        else if (other.CompareTag("Portal"))
+        {
+            SetReward(5.0f); // Bitiş noktası için büyük ödül
+            Debug.Log("Ajan mor odadaki bitiş portalına ulaştı!");
+            EndEpisode(); // Bölümü bitir
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Wall")) // Dış duvara veya engelle çarptıysa
+        // Engellere veya duvarlara çarparsa ağır ceza ver ve bölümü başa sar
+        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Wall"))
         {
-            SetReward(-1.0f); // Ceza!
-            EndEpisode();    // Turu bitir
+            SetReward(-1.0f);
+            EndEpisode();
+        }
+        // Kapıya çarparsa bölümü BİTİRME
+        else if (collision.gameObject.CompareTag("Gate"))
+        {
+            // Ajanın kapıya yapışıp sürtünmesini önlemek için çok ufak bir uyarı cezası ver.
+            // EndEpisode() OLMADIĞI İÇİN bölüm başa sarmaz, ajan kapıda bekler.
+            AddReward(-0.01f);
         }
     }
 
