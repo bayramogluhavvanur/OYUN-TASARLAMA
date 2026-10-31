@@ -31,7 +31,10 @@ public static class ParkourMaterialFixer
         int fixedCount = 0;
         foreach (var r in root.GetComponentsInChildren<Renderer>(true))
         {
-            if (r.sharedMaterial != null) continue;   // sadece eksik olanları doldur
+            var cur = r.sharedMaterial;
+            bool broken = cur == null || cur.shader == null || cur.shader.name == "Hidden/InternalErrorShader";
+            if (!broken) continue;
+
             string name = MaterialFor(r.gameObject);
             if (name == null) continue;
 
