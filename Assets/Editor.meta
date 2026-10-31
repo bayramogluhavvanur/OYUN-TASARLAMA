@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Editor.meta
 guid: 1f3fa48dda4e500448f7cf23780fcd5a
+========
+guid: d9aef43d800561f418821a9e635d2f83
+>>>>>>>> Stashed changes:Assets/AncientGreek_Free.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
