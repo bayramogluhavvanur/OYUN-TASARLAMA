@@ -11,9 +11,9 @@ public class CompanionAgent : Agent
     private void Update()
     {
         // Ajan zeminden aşağı (örneğin Y ekseninde -1'in altına) düşerse bölümü bitir
-        if (transform.localPosition.y < -20f)
+        if (transform.position.y < -20f)
         {
-            SetReward(-1.0f);
+            AddReward(-1.0f);
             EndEpisode();
         }
     }
@@ -22,10 +22,19 @@ public class CompanionAgent : Agent
     [SerializeField] private float moveSpeed = 5f;
     private Rigidbody rb;
     public Transform spawnPoint;
+    [SerializeField] private Transform[] checkpoints;
+    private int sonrakiCheckpoint = 0;
+    [SerializeField] private bool trainingMode = true;
+    [SerializeField] private bool randomizeSwitch = false;
+    [SerializeField] private GameObject Door_Agent;    // ajanın kapısı
+    [SerializeField] private GameObject Door_Player;   // ana karakterin kapısı
+    private bool butonaBasildi = false;
+
 
     public override void Initialize()
     {
         rb = GetComponent<Rigidbody>();
+        rb.sleepThreshold = 0f;
     }
 
     // HER BÖLÜM (EPISODE) BAŞINDA SIFIRLAMA
@@ -33,44 +42,70 @@ public class CompanionAgent : Agent
     {
         Debug.Log("--- BÖLÜM BAŞLADI (Ajan Doğdu) ---"); // TEŞHİS 1
 
-        ilkKontrolGecildi = false;
-        ikinciKontrolGecildi = false;
+        sonrakiCheckpoint = 0;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
         if (obstacleWall != null)
         {
-            obstacleWall.localPosition = new Vector3(Random.Range(-2f, 2f), 0.5f, 0f);
+            Vector3 p = obstacleWall.position;
+            obstacleWall.position = new Vector3(Random.Range(-2f, 2f), p.y, p.z);
         }
 
-        targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), 0.5f, Random.Range(4f, 7f));
-        transform.position = spawnPoint.position;
+        if (randomizeSwitch)
+        {
+            Vector3 p = targetSwitch.localPosition;
+            targetSwitch.localPosition = new Vector3(Random.Range(-4f, 4f), p.y, Random.Range(4f, 7f));
+        }
+        Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+        transform.position = spawnPoint.position + offset;
+        butonaBasildi = false;
     }
-
+    private Vector3 currentMoveInput = Vector3.zero;
+    private float oncekiMesafe;
     public override void OnActionReceived(ActionBuffers actions)
     {
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
-        Debug.Log("Ajan Kararı -> X: " + moveX + " | Z: " + moveZ); // TEŞHİS 2
+        currentMoveInput = new Vector3(moveX, 0, moveZ);
 
-        Vector3 move = new Vector3(moveX, 0, moveZ) * moveSpeed;
-        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+        // Mesafe ödülü: hedefe yaklaştıkça artı, uzaklaştıkça eksi
+        float yeniMesafe = Vector3.Distance(transform.position, GetCurrentTarget().position);
+        AddReward((oncekiMesafe - yeniMesafe) * 0.1f);
+        oncekiMesafe = yeniMesafe;
 
+        // Küçük zaman cezası
         AddReward(-0.001f);
     }
 
+    private Transform GetCurrentTarget()
+    {
+        if (checkpoints != null && sonrakiCheckpoint < checkpoints.Length)
+            return checkpoints[sonrakiCheckpoint];
+        return targetSwitch;   // tüm checkpoint'ler bitince hedef buton
+    }
+
+    private void FixedUpdate()
+    {
+        RequestDecision();   // Her fizik adımında karar iste (Decision Requester yerine)
+
+        if (rb.IsSleeping()) rb.WakeUp();
+
+        Vector3 move = currentMoveInput * moveSpeed;
+        rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+    }
     // AJANIN VERİ TOPLAMASI (Gözlem)
     public override void CollectObservations(VectorSensor sensor)
     {
         // Ajanın ve hedeflerin pozisyonları
-        sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(targetSwitch.localPosition);
+        sensor.AddObservation(transform.position);
+        sensor.AddObservation(targetSwitch.position);
 
         // Engelin ajana göre MESAFESİ / YÖNÜ (Vector3 = 3 observation)
         if (obstacleWall != null)
         {
-            sensor.AddObservation(obstacleWall.localPosition - transform.localPosition);
+            sensor.AddObservation(obstacleWall.position - transform.position);
         }
         else
         {
@@ -79,34 +114,44 @@ public class CompanionAgent : Agent
 
         sensor.AddObservation(rb.linearVelocity.x);
         sensor.AddObservation(rb.linearVelocity.z);
+        sensor.AddObservation(GetCurrentTarget().position - transform.position);
+
     }
 
 
     // TETİKLENMELER VEYA ÇARPIŞMALAR
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Checkpoint_1") && !ilkKontrolGecildi)
+        if (other.CompareTag("Checkpoint"))
         {
-            ilkKontrolGecildi = true;
-            AddReward(1.0f); // Doğru yön için ara ödül (Bölüm bitmez)
-            Debug.Log("İlk engelin sağından geçildi!");
-        }
-        else if (other.CompareTag("Checkpoint_2") && ilkKontrolGecildi && !ikinciKontrolGecildi)
-        {
-            ikinciKontrolGecildi = true;
-            AddReward(1.0f); // İkinci doğru yön için ara ödül
-            Debug.Log("İkinci engelin solundan geçildi!");
+            if (checkpoints != null &&
+                sonrakiCheckpoint < checkpoints.Length &&
+                other.transform == checkpoints[sonrakiCheckpoint])
+            {
+                sonrakiCheckpoint++;
+                AddReward(1.0f);
+                oncekiMesafe = Vector3.Distance(transform.position, GetCurrentTarget().position);
+            }
         }
         else if (other.CompareTag("Button"))
         {
-            SetReward(5.0f); // Hedefe ulaştı, büyük ödül!
-            Debug.Log("Butona basıldı, bölüm başarıyla bitti!");
-            // Buraya kapıyı açma kodunuzu ekleyebilirsiniz.
-            EndEpisode(); // Bölümü bitir ve başa sar
+            if (trainingMode)
+            {
+                AddReward(5.0f);
+                EndEpisode();
+            }
+            else if (!butonaBasildi)
+            {
+                butonaBasildi = true;
+                AddReward(5.0f);
+                if (Door_Agent != null) Door_Agent.SetActive(false);
+                if (Door_Player != null) Door_Player.SetActive(false);
+                Debug.Log("Buton basıldı, kapılar açıldı");
+            }
         }
         else if (other.CompareTag("Portal"))
         {
-            SetReward(5.0f); // Bitiş noktası için büyük ödül
+            AddReward(5.0f); // Bitiş noktası için büyük ödül
             Debug.Log("Ajan mor odadaki bitiş portalına ulaştı!");
             EndEpisode(); // Bölümü bitir
         }
@@ -114,26 +159,32 @@ public class CompanionAgent : Agent
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Engellere veya duvarlara çarparsa ağır ceza ver ve bölümü başa sar
-        if (collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Wall"))
+        Debug.Log("ÇARPIŞMA: " + collision.gameObject.name + " tag: " + collision.gameObject.tag);
+        if (collision.gameObject.CompareTag("Obstacle") ||
+            collision.gameObject.CompareTag("Wall"))
+
         {
-            SetReward(-1.0f);
-            EndEpisode();
+            AddReward(-0.5f);
+            if (trainingMode) EndEpisode();
         }
-        // Kapıya çarparsa bölümü BİTİRME
         else if (collision.gameObject.CompareTag("Gate"))
         {
-            // Ajanın kapıya yapışıp sürtünmesini önlemek için çok ufak bir uyarı cezası ver.
-            // EndEpisode() OLMADIĞI İÇİN bölüm başa sarmaz, ajan kapıda bekler.
             AddReward(-0.01f);
         }
     }
-
     // MANUEL TEST İÇİN (Klavyeyle Hareket Ettirme)
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var continuousActions = actionsOut.ContinuousActions;
-        continuousActions[0] = Input.GetAxis("Horizontal");
-        continuousActions[1] = Input.GetAxis("Vertical");
+        var a = actionsOut.ContinuousActions;
+        float x = 0f, z = 0f;
+
+        if (Input.GetKey(KeyCode.RightArrow)) x = 1f;
+        if (Input.GetKey(KeyCode.LeftArrow)) x = -1f;
+        if (Input.GetKey(KeyCode.UpArrow)) z = 1f;
+        if (Input.GetKey(KeyCode.DownArrow)) z = -1f;
+
+        a[0] = x;
+        a[1] = z;
     }
+
 }
