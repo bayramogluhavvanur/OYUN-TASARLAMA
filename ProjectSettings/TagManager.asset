@@ -19,6 +19,7 @@ TagManager:
   - Checkpoint_1
   - Checkpoint_2
   - Button
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
