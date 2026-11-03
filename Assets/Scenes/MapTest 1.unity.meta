@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/MapTest 1.unity.meta
 guid: 226a93105a3fac1498098c39b2282e2f
+========
+guid: 48faeaa440c5a8b458c48aa404d12dcc
+>>>>>>>> npc-ollama-entegrasyonu:Assets/Scenes/MapTest.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
