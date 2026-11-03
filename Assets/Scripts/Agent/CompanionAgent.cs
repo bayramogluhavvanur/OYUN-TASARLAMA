@@ -28,7 +28,11 @@ public class CompanionAgent : Agent
     [SerializeField] private bool randomizeSwitch = false;
     [SerializeField] private GameObject Door_Agent;    // ajanın kapısı
     [SerializeField] private GameObject Door_Player;   // ana karakterin kapısı
+    [SerializeField] private Transform player;              // ana karakter
+    [SerializeField] private float followDistance = 8f;     // bu mesafeden uzaksa ajan bekler
+    [SerializeField] private bool useFollowMode = true;     // eğitimde false
     private bool butonaBasildi = false;
+    private bool gorevTamam = false;
 
 
     public override void Initialize()
@@ -42,6 +46,8 @@ public class CompanionAgent : Agent
     {
         Debug.Log("--- BÖLÜM BAŞLADI (Ajan Doğdu) ---"); // TEŞHİS 1
 
+        gorevTamam = false;
+        butonaBasildi = false;
         sonrakiCheckpoint = 0;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
@@ -88,6 +94,23 @@ public class CompanionAgent : Agent
 
     private void FixedUpdate()
     {
+        if (gorevTamam)
+        {
+            rb.linearVelocity = Vector3.zero;
+            if (player != null && Vector3.Distance(transform.position, player.position) > 12f)
+                gameObject.SetActive(false);   // ana karakter uzaklaşınca ajan kaybolur
+            return;
+        }
+        if (useFollowMode && !trainingMode && player != null)
+        {
+            float d = Vector3.Distance(transform.position, player.position);
+            if (d > followDistance)
+            {
+                currentMoveInput = Vector3.zero;
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                return;   // ana karakter uzak, ajan bekler
+            }
+        }
         RequestDecision();   // Her fizik adımında karar iste (Decision Requester yerine)
 
         if (rb.IsSleeping()) rb.WakeUp();
@@ -118,6 +141,10 @@ public class CompanionAgent : Agent
 
     }
 
+    private void AjaniGizle()
+    {
+        gameObject.SetActive(false);
+    }
 
     // TETİKLENMELER VEYA ÇARPIŞMALAR
     private void OnTriggerEnter(Collider other)
@@ -143,6 +170,7 @@ public class CompanionAgent : Agent
             else if (!butonaBasildi)
             {
                 butonaBasildi = true;
+                gorevTamam = true;
                 AddReward(5.0f);
                 if (Door_Agent != null) Door_Agent.SetActive(false);
                 if (Door_Player != null) Door_Player.SetActive(false);
