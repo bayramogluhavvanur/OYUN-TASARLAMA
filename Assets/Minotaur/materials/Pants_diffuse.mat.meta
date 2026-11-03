@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f58d90f3a31b7fb43857d962fa58ee0b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62219
+  packageName: Minotaur
+  packageVersion: 1.0
+  assetPath: Assets/Minotaur/materials/Pants_diffuse.mat
+  uploadId: 116362
