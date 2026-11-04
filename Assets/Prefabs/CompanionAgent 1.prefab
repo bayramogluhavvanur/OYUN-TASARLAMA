@@ -35,7 +35,7 @@ Transform:
   m_GameObject: {fileID: 1908071453345168307}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: 1, z: -8.5}
+  m_LocalPosition: {x: 5, y: 1, z: 11.56}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -234,14 +234,14 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
-      BranchSizes: 01000000i
-    VectorActionSize: 
+      BranchSizes: 
+    VectorActionSize: 02000000i
     VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 7589aecea623d9448b10684a27d4433a, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 2
   m_BehaviorName: CompanionAgent
   TeamId: 0
   m_UseChildSensors: 1
@@ -278,11 +278,21 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 0
   targetSwitch: {fileID: 0}
   obstacleWall: {fileID: 0}
-  moveSpeed: 3
+  moveSpeed: 5
   spawnPoint: {fileID: 0}
-  checkpoint1: {fileID: 0}
-  checkpoint2: {fileID: 0}
-  trainingMode: 1
+  checkpoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  trainingMode: 0
+  randomizeSwitch: 0
+  Door_Agent: {fileID: 0}
+  Door_Player: {fileID: 0}
+  player: {fileID: 0}
+  followDistance: 15
+  useFollowMode: 1
+  hideNearDistance: 4
+  hideFarDistance: 9
+  minVisibleTime: 2.5
