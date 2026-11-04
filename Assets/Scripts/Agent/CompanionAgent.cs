@@ -33,6 +33,11 @@ public class CompanionAgent : Agent
     [SerializeField] private bool useFollowMode = true;     // eğitimde false
     private bool butonaBasildi = false;
     private bool gorevTamam = false;
+    [SerializeField] private float hideNearDistance = 4f;    // yaklaşınca kaybol
+    [SerializeField] private float hideFarDistance = 10f;    // uzaklaşınca kaybol
+    [SerializeField] private float minVisibleTime = 1.5f;
+    private float gizleSayaci = 0f;
+
 
 
     public override void Initialize()
@@ -46,6 +51,7 @@ public class CompanionAgent : Agent
     {
         Debug.Log("--- BÖLÜM BAŞLADI (Ajan Doğdu) ---"); // TEŞHİS 1
 
+        gizleSayaci = 0f;
         gorevTamam = false;
         butonaBasildi = false;
         sonrakiCheckpoint = 0;
@@ -96,9 +102,16 @@ public class CompanionAgent : Agent
     {
         if (gorevTamam)
         {
+            Debug.Log("Mesafe: " + Vector3.Distance(transform.position, player.position));
             rb.linearVelocity = Vector3.zero;
-            if (player != null && Vector3.Distance(transform.position, player.position) > 12f)
-                gameObject.SetActive(false);   // ana karakter uzaklaşınca ajan kaybolur
+            gizleSayaci += Time.fixedDeltaTime;
+
+            if (gizleSayaci > minVisibleTime && player != null)
+            {
+                float d = Vector3.Distance(transform.position, player.position);
+                if (d < hideNearDistance || d > hideFarDistance)
+                    gameObject.SetActive(false);
+            }
             return;
         }
         if (useFollowMode && !trainingMode && player != null)

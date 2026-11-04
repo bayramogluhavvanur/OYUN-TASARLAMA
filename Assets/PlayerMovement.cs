@@ -3,15 +3,20 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float hiz = 6f;
-    public float donmeHizi = 150f;
+    public float donmeHizi = 10f;
 
     void Update()
     {
-        float yuru = Input.GetAxis("Vertical") * hiz * Time.deltaTime;
-        float don = Input.GetAxis("Horizontal") * donmeHizi * Time.deltaTime;
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+        Vector3 yon = new Vector3(x, 0, z);
 
-        // İleri-geri yürüme ve sağa-sola dönme işlemi
-        transform.Translate(0, 0, yuru);
-        transform.Rotate(0, don, 0);
+        if (yon.sqrMagnitude > 0.01f)
+        {
+            transform.position += yon.normalized * hiz * Time.deltaTime;
+
+            Quaternion hedef = Quaternion.LookRotation(yon);
+            transform.rotation = Quaternion.Slerp(transform.rotation, hedef, donmeHizi * Time.deltaTime);
+        }
     }
 }
