@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 54dd8ae60378d5143b14a2e5e6a8da1e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62219
+  packageName: Minotaur
+  packageVersion: 1.0
+  assetPath: Assets/Minotaur/prefab/Minotaur.prefab
+  uploadId: 116362

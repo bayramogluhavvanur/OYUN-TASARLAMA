@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8caba3ffe07e2704abcc9377cc37c3cd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62219
+  packageName: Minotaur
+  packageVersion: 1.0
+  assetPath: Assets/Minotaur/animation/Materials/Minotaur_diffuse.mat
+  uploadId: 116362

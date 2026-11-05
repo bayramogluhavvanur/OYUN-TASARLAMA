@@ -3,20 +3,36 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float hiz = 6f;
-    public float donmeHizi = 10f;
+    public float donmeHizi = 150f;
+
+    [Header("Başlangıç Konumu Ayarları")]
+    public Transform baslangicNoktasi; // İstersen boş bir obje sürükle
+    public Vector3 sabitKoordinat;     // Obje yoksa bu koordinatı kullanır
+    public Vector3 sabitRotasyon;      // Başlangıçta bakacağı yön
+
+    void Start()
+    {
+        // Eğer Inspector'dan bir başlangıç noktası objesi atandıysa oraya ışınla
+        if (baslangicNoktasi != null)
+        {
+            transform.position = baslangicNoktasi.position;
+            transform.rotation = baslangicNoktasi.rotation;
+        }
+        else
+        {
+            // Obje atanmadıysa Inspector'daki Sabit Koordinat değerlerine ışınla
+            transform.position = sabitKoordinat;
+            transform.eulerAngles = sabitRotasyon;
+        }
+    }
 
     void Update()
     {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-        Vector3 yon = new Vector3(x, 0, z);
+        float yuru = Input.GetAxis("Vertical") * hiz * Time.deltaTime;
+        float don = Input.GetAxis("Horizontal") * donmeHizi * Time.deltaTime;
 
-        if (yon.sqrMagnitude > 0.01f)
-        {
-            transform.position += yon.normalized * hiz * Time.deltaTime;
-
-            Quaternion hedef = Quaternion.LookRotation(yon);
-            transform.rotation = Quaternion.Slerp(transform.rotation, hedef, donmeHizi * Time.deltaTime);
-        }
+        // İleri-geri yürüme ve sağa-sola dönme işlemi
+        transform.Translate(0, 0, yuru);
+        transform.Rotate(0, don, 0);
     }
 }
