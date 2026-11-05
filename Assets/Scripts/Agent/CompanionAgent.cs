@@ -182,6 +182,7 @@ public class CompanionAgent : Agent
             }
             else if (!butonaBasildi)
             {
+                Debug.Log("Button tag'ine girdi. trainingMode: " + trainingMode + ", basildi: " + butonaBasildi);
                 butonaBasildi = true;
                 gorevTamam = true;
                 AddReward(5.0f);

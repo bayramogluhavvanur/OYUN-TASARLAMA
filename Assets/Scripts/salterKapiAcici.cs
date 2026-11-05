@@ -15,15 +15,18 @@ public class SalterKapiAcici : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Eğer daha önce basılmadıysa ve dokunan objenin Tag'i "Agent" ise
-        if (!tetiklendiMi && other.CompareTag("Agent"))
+        // Eğer daha önce basılmadıysa ve dokunan objenin Tag'i "CompanionAgent" ise
+        if (!tetiklendiMi &&
+    (other.CompareTag("CompanionAgent") ||
+     other.CompareTag("CompanionAgent 1") ||
+     other.CompareTag("CompanionAgent 1 (1)")))
         {
             tetiklendiMi = true; // Tekrar tetiklenmesini kilitle
 
             KapiyiYukselt(kapi1);
             KapiyiYukselt(kapi2);
 
-            Debug.Log(gameObject.name + " şalteri Agent tarafından açıldı!");
+            Debug.Log(gameObject.name + " şalteri Companion Agent tarafından açıldı!");
         }
     }
 
