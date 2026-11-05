@@ -37,6 +37,14 @@ public class CompanionAgent : Agent
     [SerializeField] private float hideFarDistance = 10f;    // uzaklaşınca kaybol
     [SerializeField] private float minVisibleTime = 1.5f;
     private float gizleSayaci = 0f;
+    [Header("Sıralı Başlatma")]
+    [SerializeField] private bool bekleyerekBasla = false;   // 2. ve 3. ajanda true yap
+    [SerializeField] private CompanionAgent oncekiAjan;      // 1. ajanda boş bırak
+    private bool odaTetiklendi = false;
+    private bool basladi = true;
+
+    public bool GorevTamam => gorevTamam;          // başka ajan okuyabilsin
+    public void OdaTetikle() { odaTetiklendi = true; }
 
 
 
@@ -44,6 +52,7 @@ public class CompanionAgent : Agent
     {
         rb = GetComponent<Rigidbody>();
         rb.sleepThreshold = 0f;
+        basladi = trainingMode || !bekleyerekBasla;
     }
 
     // HER BÖLÜM (EPISODE) BAŞINDA SIFIRLAMA
@@ -100,6 +109,20 @@ public class CompanionAgent : Agent
 
     private void FixedUpdate()
     {
+        if (!basladi)
+        {
+            bool oncekiBitti = (oncekiAjan == null) || oncekiAjan.GorevTamam;
+            if (oncekiBitti && odaTetiklendi)
+            {
+                basladi = true;   // iki şart da sağlandı
+            }
+            else
+            {
+                currentMoveInput = Vector3.zero;
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                return;           // beklerken karar da istemez, hareket de etmez
+            }
+        }
         if (gorevTamam)
         {
             Debug.Log("Mesafe: " + Vector3.Distance(transform.position, player.position));
@@ -113,6 +136,7 @@ public class CompanionAgent : Agent
                     gameObject.SetActive(false);
             }
             return;
+
         }
         if (useFollowMode && !trainingMode && player != null)
         {
@@ -130,13 +154,14 @@ public class CompanionAgent : Agent
 
         Vector3 move = currentMoveInput * moveSpeed;
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
+
     }
     // AJANIN VERİ TOPLAMASI (Gözlem)
     public override void CollectObservations(VectorSensor sensor)
     {
         // Ajanın ve hedeflerin pozisyonları
-        sensor.AddObservation(transform.position);
-        sensor.AddObservation(targetSwitch.position);
+        sensor.AddObservation(transform.position - spawnPoint.position);                         // 3
+        sensor.AddObservation(GetCurrentTarget().position - spawnPoint.position);                // 3
 
         // Engelin ajana göre MESAFESİ / YÖNÜ (Vector3 = 3 observation)
         if (obstacleWall != null)
@@ -182,7 +207,7 @@ public class CompanionAgent : Agent
             }
             else if (!butonaBasildi)
             {
-                Debug.Log("Button tag'ine girdi. trainingMode: " + trainingMode + ", basildi: " + butonaBasildi);
+
                 butonaBasildi = true;
                 gorevTamam = true;
                 AddReward(5.0f);
