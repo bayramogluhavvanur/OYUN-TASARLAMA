@@ -11,6 +11,7 @@ public class FinalRoomFollower : MonoBehaviour
     private NavMeshAgent nav;
     private int index = 0;
     private bool finalDone = false;
+    [SerializeField] private Transform exitSwitch;   // Exit_Switch / Switch_Trigger
 
     private void Awake()
     {
@@ -19,11 +20,22 @@ public class FinalRoomFollower : MonoBehaviour
 
     private void Update()
     {
+        if (!finalDone && exitSwitch != null &&
+    Vector3.Distance(transform.position, exitSwitch.position) < 2.5f)
+        {
+            finalDone = true;
+            foreach (var g in finalGatesToOpen)
+                if (g != null) g.SetActive(false);
+            if (index <= finalButtonIndex) index = finalButtonIndex + 1;   // çıkışa geç
+            Debug.Log("Ajan son butona bastı (mesafe)");
+        }
+
         if (index >= waypoints.Length) return;
 
         // 1) Bu waypoint'in kapısı hâlâ kapalıysa bekle
         if (index < gates.Length && gates[index] != null && gates[index].activeSelf)
         {
+            Debug.Log("BEKLIYOR: index=" + index + " kapi=" + gates[index].name);
             nav.isStopped = true;
             return;
         }
