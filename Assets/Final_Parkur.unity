@@ -1284,6 +1284,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1857888208}
     - target: {fileID: 8646318244002500637, guid: 0806fbd2540fec64190119949afb1b50, type: 3}
+      propertyPath: yardimliMod
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646318244002500637, guid: 0806fbd2540fec64190119949afb1b50, type: 3}
       propertyPath: targetSwitch
       value: 
       objectReference: {fileID: 192571397}
