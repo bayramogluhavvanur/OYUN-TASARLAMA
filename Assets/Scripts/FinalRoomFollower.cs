@@ -24,6 +24,7 @@ public class FinalRoomFollower : MonoBehaviour
         // 1) Bu waypoint'in kapısı hâlâ kapalıysa bekle
         if (index < gates.Length && gates[index] != null && gates[index].activeSelf)
         {
+            Debug.Log("BEKLIYOR: index=" + index + " kapi=" + gates[index].name);
             nav.isStopped = true;
             return;
         }
