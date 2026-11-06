@@ -766,9 +766,6 @@ OYUN-TASARLAMA/
 
 **Branch stratejisi:** `main` · `map-design` · `npc-ollama-entegrasyonu` · `feature/llm-dialogue` · `feature/autonomous-agent` · `teslim`
 
-```bash
-git shortlog -sn --all
-```
 
 <table align="center">
   <tr>
