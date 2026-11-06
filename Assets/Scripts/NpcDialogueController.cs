@@ -19,6 +19,7 @@ public class NpcDialogueController : MonoBehaviour
     [SerializeField] string secretWord = "ikarus";
     [SerializeField, Range(0, 10)] int maxHistoryTurns = 6;
     [SerializeField, Range(0, 3)] int maxRetries = 1;
+    [SerializeField, Range(0f, 10f)] float closeDelayAfterUnlock = 3f;
 
     IDialogueView view;
     INpcActionHandler handler;
@@ -76,7 +77,7 @@ public class NpcDialogueController : MonoBehaviour
 
     public void EndConversation()
     {
-        if (!enabled || completed) return;
+        if (!enabled) return;
         session++;
         busy = false;
         view.ShowThinking(false);
@@ -165,10 +166,12 @@ public class NpcDialogueController : MonoBehaviour
         }
 
         // Savunma 2: parola doğrulanmadan kapı asla açılmaz (prompt injection'a karşı)
-        if (action == NpcAction.OpenDoor && !secretSpoken)
+        if (action == NpcAction.OpenDoor)
         {
-            Debug.LogWarning("Model kapıyı açmak istedi ama parola doğrulanmadı, eylem iptal edildi.");
-            action = NpcAction.None;
+            completed = true;
+            view.SetInputEnabled(false);
+            handler.Execute(action);
+            StartCoroutine(CloseAfterUnlock());
         }
 
         var finalReply = new NpcReply { Text = text, Action = action, Mood = reply.Mood };
@@ -180,6 +183,11 @@ public class NpcDialogueController : MonoBehaviour
             completed = true;
             view.SetInputEnabled(false);
             handler.Execute(action);
+        }
+        IEnumerator CloseAfterUnlock()
+        {
+            yield return new WaitForSeconds(closeDelayAfterUnlock);
+            EndConversation();
         }
     }
 
