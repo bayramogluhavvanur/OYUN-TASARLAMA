@@ -375,7 +375,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: OYUN ADI
+  m_text: "\u0130KARYA"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
   m_sharedMaterial: {fileID: -4791522941538857457, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
@@ -512,7 +512,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'SPACE: DEVAM         ESC:ATLA'
+  m_text: '            [SPACE]  devam      [ESC]  atla'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
   m_sharedMaterial: {fileID: -4791522941538857457, guid: f9aa2dace86f56d49b2420e5ec73e535, type: 2}
@@ -521,8 +521,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4284133856
+  m_fontColor: {r: 0.8784314, g: 0.69411767, b: 0.3529412, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1132,7 +1132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.014195475, g: 0.014195444, b: 0.2735849, a: 1}
+  m_Color: {r: 0.019607844, g: 0.02745098, b: 0.101960786, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1293,6 +1293,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8646318244002500637, guid: 0806fbd2540fec64190119949afb1b50, type: 3}
+      propertyPath: hideFarDistance
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646318244002500637, guid: 0806fbd2540fec64190119949afb1b50, type: 3}
       propertyPath: 'checkpoints.Array.data[0]'
       value: 
       objectReference: {fileID: 1608528085}
@@ -1425,7 +1429,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7804946122520963969, guid: 76827309fea74a4499cc16e2ab0c5013, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -1481,11 +1486,15 @@ MonoBehaviour:
   hikayeText: {fileID: 2064774690}
   harfHizi: 0.04
   cumleler:
-  - "Gizli bir hazineyi bulmaya haz\u0131r m\u0131s\u0131n?"
-  - "Ye\u011Fenini kaybeden bir adam\u0131n ilgi \xE7ekiici hikayesine e\u015Flik edece\u011Fiz."
+  - "\u201CGirit\u2019in alt\u0131nda, \xE7\u0131k\u0131\u015F\u0131 olmayan bir labirent yatar.\u201D"
+  - "\u201COnu yapan usta Daidalos, kendi yaratt\u0131\u011F\u0131 duvarlar\u0131n i\xE7inde mahsur kald\u0131.\u201D"
+  - "\u201CO\u011Flu \u0130karus ise h\xE2l\xE2 \xF6zg\xFCrl\xFC\u011F\xFCn hayalini kuruyor.\u201D"
+  - "\u201CKanatlar\u0131n balmumu eriyeli \xE7ok oldu, ama kap\u0131lar h\xE2l\xE2 senin bir ad\u0131m\u0131n\u0131 bekliyor.\u201D"
+  - "\u201CYolunu bilen sad\u0131k dostlar, kap\u0131lar\u0131 senin i\xE7in a\xE7acak.\u201D"
+  - "\u201CG\xFCne\u015Fe ula\u015Fmak istiyorsan, yaln\u0131z de\u011Fil, birlikte ilerle.\u201D"
   noktaKapsayici: {fileID: 1394370040}
   noktaPrefab: {fileID: 7877460396567367782, guid: a4d6b5b7cf76d954bacc32e5da039dc5, type: 3}
-  aktifRenk: {r: 0.13, g: 0.83, b: 0.93, a: 1}
+  aktifRenk: {r: 0.9098039, g: 0.89411765, b: 0.84705883, a: 1}
   pasifRenk: {r: 1, g: 1, b: 1, a: 0.25}
 --- !u!114 &445441113
 MonoBehaviour:
@@ -1704,6 +1713,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6139861931732534596, guid: 26244fec4e3059f418578d89f2985968, type: 3}
   m_PrefabInstance: {fileID: 1924462616}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &700059781 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1272672618423696998, guid: 26244fec4e3059f418578d89f2985968, type: 3}
+  m_PrefabInstance: {fileID: 1924462616}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &775193856 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3696755607295814877, guid: 26244fec4e3059f418578d89f2985968, type: 3}
@@ -1762,7 +1776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.015686275, g: 0.015686275, b: 0.27450982, a: 1}
+  m_Color: {r: 0.019607844, g: 0.02745098, b: 0.101960786, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2419,7 +2433,8 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Agent
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2370316079156627876, guid: 76827309fea74a4499cc16e2ab0c5013, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -2463,7 +2478,9 @@ MonoBehaviour:
   - {fileID: 1126664677}
   finalGatesToOpen:
   - {fileID: 979725290}
+  - {fileID: 2052003275}
   finalButtonIndex: 4
+  exitSwitch: {fileID: 0}
 --- !u!195 &1271288542
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -3487,7 +3504,7 @@ PrefabInstance:
     - target: {fileID: 4251326784230287317, guid: 400694d0e67b8894db45e87a361cea4f, type: 3}
       propertyPath: baslangicNoktasi
       value: 
-      objectReference: {fileID: 1937026270}
+      objectReference: {fileID: 700059781}
     - target: {fileID: 7145736942390539054, guid: 400694d0e67b8894db45e87a361cea4f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5
@@ -3877,11 +3894,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7455530062766037015, guid: 26244fec4e3059f418578d89f2985968, type: 3}
   m_PrefabInstance: {fileID: 1924462616}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1937026270 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 104771181041316509, guid: 26244fec4e3059f418578d89f2985968, type: 3}
-  m_PrefabInstance: {fileID: 1924462616}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1938982579 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2766326955554991928, guid: 26244fec4e3059f418578d89f2985968, type: 3}
@@ -4256,8 +4268,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292404456
+  m_fontColor: {r: 0.9098039, g: 0.89411765, b: 0.84705883, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4539,10 +4551,10 @@ SceneRoots:
   - {fileID: 2142759820}
   - {fileID: 22736972}
   - {fileID: 2004204667}
-  - {fileID: 1271288539}
   - {fileID: 425473094}
   - {fileID: 2114773441}
   - {fileID: 425127723}
+  - {fileID: 1271288539}
   - {fileID: 1737683676}
   - {fileID: 1408412209}
   - {fileID: 231361996}
