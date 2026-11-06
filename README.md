@@ -1,10 +1,15 @@
 #  ICARIA
 
 > **Ders:** Yazılım Geliştirme Laboratuvarı-I — Proje 1
+> 
 > **Üniversite / Bölüm:** Kocaeli Üniversitesi, Teknoloji Fakültesi, Bilişim Sistemleri Mühendisliği
+> 
 > **Ekip Üyeleri:** Havvanur Bayramoğlu,241307052 · Yağmur Cengiz,241307026
+> 
 > **Tarih:** 6 Kasım 2026
+> 
 > **Oyun Motoru:** Unity 6 (6000.6.4f1), C#
+> 
 > **Yapay Zekâ Bileşenleri:** Unity ML-Agents (PPO) + NavMesh + Ollama (Yerel LLM)
 
 ## İçindekiler
