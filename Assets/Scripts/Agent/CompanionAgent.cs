@@ -45,6 +45,7 @@ public class CompanionAgent : Agent
 
     public bool GorevTamam => gorevTamam;          // başka ajan okuyabilsin
     public void OdaTetikle() { odaTetiklendi = true; }
+    [SerializeField] private bool yardimliMod = false;
 
 
 
@@ -151,6 +152,16 @@ public class CompanionAgent : Agent
         RequestDecision();   // Her fizik adımında karar iste (Decision Requester yerine)
 
         if (rb.IsSleeping()) rb.WakeUp();
+        // --- ACİL YARDIM: oyun modunda checkpoint/şalter yönüne yürüt ---
+        if (!trainingMode && yardimliMod)
+        {
+            Vector3 yon = GetCurrentTarget().position - transform.position;
+            yon.y = 0;
+            if (yon.magnitude > 0.3f)
+                currentMoveInput = yon.normalized;
+            else
+                currentMoveInput = Vector3.zero;
+        }
 
         Vector3 move = currentMoveInput * moveSpeed;
         rb.linearVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
