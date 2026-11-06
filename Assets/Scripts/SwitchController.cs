@@ -11,6 +11,7 @@ public class SwitchController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Şalter tetiklendi: " + other.name + " tag=" + other.tag);
         // Yalnızca "Player" etiketli obje dokunduğunda tetiklenir
         if (!tetiklendi && (other.CompareTag("Player") || other.CompareTag("Agent")))
         {

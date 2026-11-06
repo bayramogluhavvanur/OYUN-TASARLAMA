@@ -16,7 +16,7 @@ public class SalterKapiAcici : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Eğer daha önce basılmadıysa ve dokunan objenin Tag'i "Agent" ise
-        if (!tetiklendiMi && other.CompareTag("Agent"))
+        if (!tetiklendiMi && other.CompareTag("Player"))
         {
             tetiklendiMi = true; // Tekrar tetiklenmesini kilitle
 
