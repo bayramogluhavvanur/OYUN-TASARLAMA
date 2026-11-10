@@ -83,7 +83,7 @@ flowchart TD
 | Hata yönetimi | Bölüm 4 |
 | Asenkron yapı, "Düşünüyor..." geri bildirimi | Bölüm 3.5 |
 | OOP / SOLID | Bölüm 7 |
-| +10 bonus: gerçek RL eğitimi ve ödül grafiği | Bölüm 2.4 |
+| Gerçek RL eğitimi ve ödül grafiği | Bölüm 2.4 |
 
 ---
 
@@ -95,7 +95,7 @@ Ajan iki farklı karar mekanizması kullanır. İkisi de gerçek yol bulma / ö�
 
 | Bölüm | Mekanizma | Neden |
 |---|---|---|
-| Oda 1–3 | **ML-Agents (PPO)** | Engelleri sensörle algılayıp aşmayı öğrenmesi, +10 bonus şartı |
+| Oda 1–3 | **ML-Agents (PPO)** | Engelleri sensörle algılayıp aşmayı öğrenmesi |
 | Oda 4 | **NavMesh + durum makinesi** | Kapı açılma durumuna bağlı, sıralı hedefli yürüyüş; yol bulma Unity NavMesh tarafından yapılır |
 
 ```mermaid
@@ -261,10 +261,10 @@ stateDiagram-v2
 
 | Parametre | Değer | Anlamı |
 |---|---|---|
-| `followDistance` | [ör. 13] | Oyuncu bu mesafeden uzaksa ajan bekler |
-| `hideNearDistance` | 2 | Oyuncu bu kadar yaklaşınca ajan gizlenir |
-| `hideFarDistance` | 11 | Oyuncu bu kadar uzaklaşınca ajan gizlenir |
-| `minVisibleTime` | 2.5 sn | Buton sonrası minimum görünme süresi |
+| `followDistance` | [ 8f ] | Oyuncu bu mesafeden uzaksa ajan bekler |
+| `hideNearDistance` | 4f | Oyuncu bu kadar yaklaşınca ajan gizlenir |
+| `hideFarDistance` | 10f | Oyuncu bu kadar uzaklaşınca ajan gizlenir |
+| `minVisibleTime` | 1.5 sn | Buton sonrası minimum görünme süresi |
 
 Her odada ajan, oyuncu odaya girince `RoomActivator` ile etkinleşir. Böylece oyuncu için tek bir ajan oyun boyunca eşlik ediyor izlenimi oluşur.
 
