@@ -275,9 +275,9 @@ Oda 4'te ajanın görevi karar vermekten çok, oyuncunun açtığı kapılardan 
 | Waypoint | Ajan ne bekler | Açıklama |
 |---|---|---|
 | `WP_1` | `Gate_1A` açılsın | 1. kapı ardı |
-| `WP_2` | `Gate_1B` açılsın | |
-| `WP_3` | `Gate_2A` açılsın | |
-| `WP_4` | `Gate_2B` açılsın | |
+| `WP_2` | `Gate_1B` açılsın | 2. kapı ardı |
+| `WP_3` | `Gate_2A` açılsın | 3. kapı ardı |
+| `WP_4` | `Gate_2B` açılsın | 4. kapı ardı |
 | `WP_Son` | (kapı beklemez) | Çıkış butonunun önü, butona basar |
 | `WP_Cikis` | `Door_Agent` açık olsun | Çıkış kapısının ardı |
 
