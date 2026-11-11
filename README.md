@@ -2,9 +2,7 @@
 
 > **Ders:** Yazılım Geliştirme Laboratuvarı-I — Proje 1
 > 
-> **Üniversite / Bölüm:** Kocaeli Üniversitesi, Teknoloji Fakültesi, Bilişim Sistemleri Mühendisliği
-> 
-> **Ekip Üyeleri:** Havvanur Bayramoğlu,241307052 · Yağmur Cengiz,241307026
+> **Ekip Üyeleri:** Havvanur Bayramoğlu · Yağmur Cengiz
 > 
 > **Tarih:** 6 Kasım 2026
 > 
